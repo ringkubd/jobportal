@@ -1,0 +1,724 @@
+@media (max-width: 480px){
+
+.header-call p span {
+  margin-right: 10px;
+  font-size: 12px;
+}
+.header-call p span i {
+  font-size: 14px;
+}
+.header-social ul{
+	padding-top: 0px;
+}
+.header-social ul li a {
+  font-size: 12px;
+}
+.navbar .container {
+  padding: 10px 15px;
+}
+.navbar {
+  min-height: 75px;
+}
+.navbar-collapse {
+  margin-top: 15px;
+}
+.navbar-brand img {
+  width: 110px;
+}
+.navbar-default .navbar-nav > li > a {
+  font-size: 13px;
+}
+.nav-button {
+  font-size: 13px;
+  padding: 6px 13px;
+}
+.navbar-nav > li > a {
+  padding-left: 15px;
+  padding-right: 6px;
+}
+.main-nav {
+  padding-top: 4px;
+}
+.navbar-default .navbar-nav > li > a.active::after {
+  bottom: -2px;
+  height: 2px;
+  width: 100%;
+}
+.navbar-default .navbar-nav > li > a::after {
+  bottom: -2px;
+  height: 2px;
+}
+.slider-area .container{
+	padding: 0 50px
+}
+
+
+.slider-content {
+  margin-left: -53%;
+}
+.slider-content h2 {
+  font-size: 21px;
+  margin-bottom: 15px;
+}
+.slider-content p {
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+.search-form {
+  padding: 20px 30px;
+}
+.form-inline .form-control, .form-inline .form-control {
+  height: 30px;
+  width: 100%;
+}
+.form-inline input[type="submit"] {
+  height: 30px;
+  width: 100%
+}
+.slider-content {
+  top: 5%;
+}
+.slider-area{
+	height:440px;
+}
+#bg-slider .item img {
+  height: 440px;
+}
+.slider .owl-pagination {
+  bottom: 165px;
+  right: 0;
+  width: 30px;
+}
+.page-title{
+	padding-top: 50px;
+}
+.page-title h2 {
+  font-size: 20px;
+  margin-top: 2px;
+}
+
+.page-title h5 {
+  font-size: 12px;
+}
+.page-title p {
+  font-size: 12px;
+  line-height: 20px;
+  margin-top: 10px;
+  padding: 0 5%
+}
+.single-work {
+  padding: 20px 0 40px;
+}
+.single-work img {
+  width: 60px;
+}
+.single-work h3 {
+  font-size: 18px;
+}
+.single-work p {
+  font-size: 12px;
+  line-height: 20px;
+  margin-top: 15px;
+}
+.job-posting{
+	padding: 20px 0px 0px 30px
+}
+.nav > li > a {
+  padding: 8px 10px;
+}
+.nav-tabs > li > a {
+  font-size: 12px;
+}
+.tab-content ul li {
+  height: 235px;
+  margin-bottom: 20px;
+  width: 219px;
+}
+.tab-content ul li a img {
+  height: 100%;
+  width: 100%;
+}
+.overlay {
+  height: 235px;
+  top: -104px;
+}
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+
+  padding: 5px;
+}
+.tbl-title > h4 {
+  font-size: 16px;
+}
+.table tr td h4 span {
+  font-size: 12px;
+}
+.table tr td p {
+  font-size: 12px;
+}
+.table tr td a {
+  font-size: 12px;
+  padding: 9px 9px;
+}
+.tbl-logo > img {
+  width: 60px;
+}
+.job-add {
+  background-size: cover;
+  height: 300px;
+  margin-top: 50px;
+  width: 220px;
+}
+.job-add h2 {
+  font-size: 25px;
+  padding: 180px 20px 0;
+}
+.job-add a {
+  font-size: 13px;
+  margin: 14px 0 0 10px;
+  padding: 9px 44px;
+}
+.more-jobs {
+  margin-top: 5px;
+}
+.more-jobs a {
+  font-size: 12px;
+  padding: 12px 15px;
+}
+.client-text {
+  margin-left: 0;
+  width: 740px;
+}
+.client-face > img {
+  border: 2px solid #fff;
+  width: 60px;
+}
+.testimonial .item .client-face {
+  right: 0;
+  top: 83px;
+}
+.footer-copy{
+	padding: 0 20px;
+}
+.single-footer {
+  margin-top: 35px;
+}
+.single-footer img {
+  width: 150px;
+}
+.single-footer p {
+  font-size: 13px;
+}
+.single-footer h4 {
+  margin-bottom: 25px;
+}
+.footer-copy span {
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 12px;
+}
+.single-footer ul li {
+  margin-bottom: 5px;
+}
+.single-footer ul li a {
+  font-size: 13px;
+}
+.client-text p {
+  line-height: 20px;
+  font-size: 13px;
+}
+.client-text h4 {
+  font-size: 13px;
+}
+.client-text h4 i {
+  font-size: 11px;
+}
+
+
+}
+
+
+@media (min-width: 480px) and (max-width: 767px){
+
+.header-call p span {
+  margin-right: 10px;
+  font-size: 12px;
+}
+.header-call p span i {
+  font-size: 14px;
+}
+.header-social ul{
+	padding-top: 0px;
+}
+.header-social ul li a {
+  font-size: 12px;
+}
+.navbar .container {
+  padding: 10px 15px;
+}
+.navbar {
+  min-height: 75px;
+}
+.navbar-collapse {
+  margin-top: 15px;
+}
+.navbar-brand img {
+  width: 110px;
+}
+.navbar-default .navbar-nav > li > a {
+  font-size: 13px;
+}
+.nav-button {
+  font-size: 13px;
+  padding: 6px 13px;
+}
+.navbar-nav > li > a {
+  padding-left: 15px;
+  padding-right: 6px;
+}
+.main-nav {
+  padding-top: 4px;
+}
+.navbar-default .navbar-nav > li > a.active::after {
+  bottom: -2px;
+  height: 2px;
+  width: 100%;
+}
+.navbar-default .navbar-nav > li > a::after {
+  bottom: -2px;
+  height: 2px;
+}
+.slider-area .container{
+	padding: 0 50px
+}
+
+
+.slider-content {
+  margin-left: -53%;
+}
+.slider-content h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+.slider-content p {
+  font-size: 12px;
+  margin-bottom: 50px;
+}
+.search-form {
+  padding: 20px 30px;
+}
+.form-inline .form-control, .form-inline .form-control {
+  height: 35px;
+  width: 100%;
+}
+.form-inline input[type="submit"] {
+  height: 35px;
+  width: 100%
+}
+.slider-content {
+  top: 5%;
+}
+.slider-area{
+	height:440px;
+}
+#bg-slider .item img {
+  height: 440px;
+}
+.slider .owl-pagination {
+  bottom: 165px;
+  right: 0;
+  width: 30px;
+}
+.page-title{
+	padding-top: 50px;
+}
+.page-title h2 {
+  font-size: 20px;
+  margin-top: 2px;
+}
+.page-title h5 {
+  font-size: 12px;
+}
+.page-title p {
+  line-height: 20px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+.single-work {
+  padding: 20px 0 40px;
+}
+.single-work img {
+  width: 60px;
+}
+.single-work h3 {
+  font-size: 18px;
+}
+.single-work p {
+  font-size: 12px;
+  line-height: 20px;
+  margin-top: 15px;
+}
+.job-posting{
+	padding: 0px 0px 0px 30px
+}
+.nav > li > a {
+  padding: 8px 10px;
+}
+.nav-tabs > li > a {
+  font-size: 12px;
+}
+.tab-content ul li {
+  height: 235px;
+  margin-bottom: 20px;
+  width: 219px;
+}
+.tab-content ul li a img {
+  height: 100%;
+  width: 100%;
+}
+.overlay {
+  height: 235px;
+  top: -104px;
+}
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+
+  padding: 5px;
+}
+.tbl-title > h4 {
+  font-size: 16px;
+}
+.table tr td h4 span {
+  font-size: 12px;
+}
+.table tr td p {
+  font-size: 12px;
+}
+.table tr td a {
+  font-size: 12px;
+  padding: 9px 9px;
+}
+.tbl-logo > img {
+  width: 60px;
+}
+.job-add {
+  background-size: cover;
+  height: 300px;
+  margin-top: 50px;
+  width: 225px;
+}
+.job-add h2 {
+  font-size: 25px;
+  padding: 180px 20px 0;
+}
+.job-add a {
+  font-size: 13px;
+  margin: 14px 0 0 10px;
+  padding: 9px 44px;
+}
+.more-jobs {
+  margin-top: 5px;
+}
+.more-jobs a {
+  font-size: 12px;
+  padding: 12px 15px;
+}
+.client-text {
+  margin-left: 0;
+  width: 740px;
+}
+.testimonial .item .client-face {
+  right: -4px;
+  top: 71px;
+}
+.single-footer img {
+  width: 150px;
+}
+.single-footer p {
+  font-size: 13px;
+}
+.single-footer h4 {
+  margin-bottom: 25px;
+}
+.footer-copy span {
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 12px;
+}
+.single-footer ul li {
+  margin-bottom: 5px;
+}
+.single-footer ul li a {
+  font-size: 13px;
+}
+
+
+}
+
+@media (min-width: 768px) and (max-width: 979px){
+
+.header-call p span {
+  margin-right: 10px;
+  font-size: 12px;
+}
+.header-call p span i {
+  font-size: 14px;
+}
+.header-social ul{
+	padding-top: 0px;
+}
+.header-social ul li a {
+  font-size: 12px;
+}
+.navbar {
+  min-height: 85px;
+}
+.navbar-brand img {
+  width: 110px;
+}
+.navbar-default .navbar-nav > li > a {
+  font-size: 13px;
+}
+.nav-button {
+  font-size: 13px;
+  padding: 6px 13px;
+}
+.navbar-nav > li > a {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+.main-nav {
+  padding-top: 4px;
+}
+.navbar-default .navbar-nav > li > a.active::after {
+  bottom: -15px;
+  height: 4px;
+  width: 100%;
+}
+.navbar-default .navbar-nav > li > a::after{
+	bottom: -15px;
+  height: 4px;
+}
+.slider-area .container{
+	padding: 0 50px
+}
+
+
+.slider-content {
+  margin-left: -375px;
+}
+.slider-content h2 {
+  font-size: 30px;
+  margin-bottom: 15px;
+}
+.slider-content p {
+  font-size: 12px;
+  margin-bottom: 50px;
+}
+.search-form {
+  padding: 15px 0;
+}
+.form-inline .form-control, .form-inline .form-control {
+  height: 35px;
+  width: 160px;
+}
+.form-inline input[type="submit"] {
+  height: 35px;
+  width: 80px;
+}
+
+.slider-area{
+	height:440px;
+}
+#bg-slider .item img {
+  height: 440px;
+}
+.slider .owl-pagination {
+  bottom: 165px;
+  right: 0;
+  width: 30px;
+}
+.page-title{
+	padding-top: 50px;
+}
+.page-title h2 {
+  font-size: 20px;
+  margin-top: 2px;
+}
+.page-title h5 {
+  font-size: 12px;
+}
+.page-title p {
+  line-height: 20px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+.tab-content ul li {
+  height: 235px;
+  margin-bottom: 20px;
+  width: 219px;
+}
+.tab-content ul li a img {
+  height: 100%;
+  width: 100%;
+}
+.overlay {
+  height: 235px;
+  top: -104px;
+}
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+
+  padding: 5px;
+}
+.tbl-title > h4 {
+  font-size: 16px;
+}
+.table tr td h4 span {
+  font-size: 12px;
+}
+.table tr td p {
+  font-size: 12px;
+}
+.table tr td a {
+  font-size: 12px;
+  padding: 9px 9px;
+}
+.tbl-logo > img {
+  width: 60px;
+}
+.job-add {
+  height: 400px;
+  background-size: cover;
+}
+.job-add h2 {
+  font-size: 30px;
+  padding: 240px 20px 0;
+}
+.job-add a {
+  font-size: 13px;
+  margin: 20px 0 0 10px;
+  padding: 20px 42px;
+}
+.more-jobs {
+  margin-top: 5px;
+}
+.more-jobs a {
+  font-size: 12px;
+  padding: 12px 15px;
+}
+.client-text {
+  margin-left: 0;
+  width: 740px;
+}
+.testimonial .item .client-face {
+  right: -4px;
+  top: 71px;
+}
+.single-footer img {
+  width: 150px;
+}
+.single-footer p {
+  font-size: 13px;
+}
+.single-footer h4 {
+  margin-bottom: 25px;
+}
+.footer-copy span {
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 12px;
+}
+.single-footer ul li {
+  margin-bottom: 5px;
+}
+.single-footer ul li a {
+  font-size: 13px;
+}
+
+}
+
+@media (min-width: 969px) and (max-width: 1169px){
+
+.navbar-nav > li > a {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.header-social .list-inline > li{
+	padding-right: 0px
+}
+.slider-content {
+  margin-left: -485px;
+}
+.slider-area{
+	height: 540px;
+}
+#bg-slider .item img {
+  height: 540px;
+}
+.tab-content ul li {
+  height: 160px;
+  width: 145px;
+}
+.tab-content ul li a img{
+	width: 100%;
+	height: 100%;
+}
+.overlay > h3 {
+  font-size: 15px;
+  left: 10px;
+}
+.tab-content ul.job-seeker li a .overlay p {
+  bottom: 10px;
+  font-size: 12px;
+}
+.tab-content ul.job-seeker li a:hover .overlay p{
+	left: 10px;
+}
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+
+  padding: 5px;
+}
+.tbl-logo > img {
+  width: 60px;
+}
+.tbl-title > h4 {
+  font-size: 16px;
+}
+.table tr td h4 span {
+  font-size: 12px;
+}
+.table tr td p {
+  font-size: 12px;
+}
+.table tr td a {
+  font-size: 12px;
+  padding: 9px 9px;
+}
+.job-add {
+  height: 400px;
+  background-size: cover;
+}
+.job-add h2 {
+  font-size: 30px;
+  padding: 240px 20px 0;
+}
+.job-add a {
+  font-size: 13px;
+  margin: 20px 0 0 10px;
+  padding: 20px 42px;
+}
+.more-jobs {
+  margin-top: 5px;
+}
+.more-jobs a {
+  font-size: 12px;
+  padding: 12px 15px;
+}
+.client-text {
+  margin-left: 80px;
+  width: 740px;
+}
+.testimonial .item .client-face {
+  right: 85px;
+  top: 68px;
+}
+
+}

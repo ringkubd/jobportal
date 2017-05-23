@@ -1,0 +1,149 @@
+.skill_name {
+  border-radius: 3px 0 0 3px;
+  clear: both;
+  color: white;
+  float: left;
+  font-size: 13px;
+  font-weight: bold;
+  height: 40px;
+  line-height: 40px;
+  width: 150px;
+  padding-left: 10px;
+}
+#skill_php
+{
+ background-color:#088A85;
+}
+#skill_asp
+{
+ background-color:#5858FA;
+}
+#skill_jsp
+{
+ background-color:#04B404;
+}
+#skill_lara
+{
+ background-color:yellow;
+}
+#skill_cakephp
+{
+ background-color:#0287fc;
+}
+.skillbar_wrapper 
+{
+ float:left;
+ position:relative;
+ display:block;
+ margin-bottom:15px;
+ width:400px;
+ background-color:#E6E6E6;
+ height:40px;
+ border-radius:0px 3px 3px 0px;
+}
+.skillbar_bar 
+{
+ height:40px;
+ width:0px;
+ border-radius:0px 3px 3px 0px;
+}
+#skillbar_php
+{
+ background-color:#01DFD7;
+}
+#skillbar_asp
+{
+ background-color:#8181F7;
+}
+#skillbar_jsp
+{
+ background-color:#01DF01;
+}
+
+#skillbar_cakephp
+{
+ background-color:#0429f7;
+}
+.skill_bar_percent 
+{
+ position:absolute;
+ right:10px;
+ top:0;
+ font-size:12px;
+ height:35px;
+ line-height:35px;
+ color:black;
+}
+
+
+
+.site-stats {
+	margin: 0;
+	padding: 0; text-align:center;
+	list-style: none;
+}
+.site-stats li {
+	cursor: pointer; display:inline-block;
+	margin: 0 5px 10px; text-align:center; width:42%;
+	padding:10px 0; color:#fff;
+	position: relative;
+}
+.site-stats li i{ font-size:24px; clear:both}
+.site-stats li:hover { background:#2E363F;
+}
+
+.site-stats li i {
+	vertical-align: baseline;
+}
+.site-stats li strong {
+	font-weight: bold;
+	font-size: 20px; width:100%; float:left;
+	margin-left:0px;
+}
+.site-stats li small {
+	margin-left:0px;
+	font-size: 11px;
+	width:100%; float:left;
+}
+
+.bg_lh {
+  background: #b6b3b3 none repeat scroll 0 0;
+}
+
+
+
+
+.recent-posts li, .recent-comments li, .article-post li, .recent-users li {
+  border-bottom: 1px dotted #aebdc8;
+  list-style: outside none none;
+  padding: 10px;
+}
+li:last-child{
+	border:none;
+}
+
+.user-thumb {
+  background: #ffffff none repeat scroll 0 0;
+  float: left;
+  height: 40px;
+  margin-right: 10px;
+  margin-top: 5px;
+  padding: 2px;
+  width: 40px;
+}
+.recent-posts {
+  margin: 0;
+  padding: 0;
+}
+
+
+.box-header{
+  position: absolute;
+  right: 10px;
+  top: 5px;
+}
+.users-list{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}

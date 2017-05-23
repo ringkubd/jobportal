@@ -1,0 +1,54 @@
+.dl-title {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+}
+
+.similar-jobs {
+  font-size: 18px;
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 15px;
+  border: 1px solid #ccc;
+}
+.similar-jobs__content {
+  padding: 20px 30px;
+}
+.js-similar-jobs {
+  border-bottom: 1px solid #ccc;
+}
+.similar-job__title {
+  color: #589acb;
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.similar-job .js-similar-job{
+	padding: 20px;
+}
+.similar-jobs a{
+ text-decoration: none;
+}
+.similar-job__location, .similar-job__date {
+  color: #0f0f0f;
+  display: block;
+  font-size: 14px;
+  line-height: 19px;
+}
+.l-similar-job__left {
+  float: left;
+}
+.l-similar-job__right {
+  padding-left: 60px;
+  text-align: left;
+}
+.similar-jobs__btn-wrapper {
+  margin: 40px 0 20px;
+  text-align: center;
+}
+.ej-btn.ej-btn--grey-border {
+  border: 1px solid #ccc;
+  padding: 12px 15px;
+}
