@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 09, 2017 at 06:04 AM
--- Server version: 10.0.32-MariaDB
+-- Generation Time: Feb 06, 2018 at 01:27 PM
+-- Server version: 10.0.34-MariaDB
 -- PHP Version: 5.6.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -461,7 +461,7 @@ CREATE TABLE `employers` (
 
 INSERT INTO `employers` (`id`, `name`, `email`, `password`, `slug`, `status`, `online_status`, `remember_token`, `verifyToken`, `created_at`, `updated_at`) VALUES
 (4, 'imran', 'anwar@gmail.com', '$2y$10$6P67RaGSQ1b/NWwd6q1H2eXGXZeUY7CkN5ZNAoo3MBTbtyuh58Qzq', '123456', 1, NULL, '37jJkRgl5CIK6ej5lvkF22jaQ5fVwgUrCOsBVIlWBC4mUF1gx21UTbsQP9hc', '', '2017-05-03 21:56:30', '2017-05-21 12:11:15'),
-(5, 'emon', 'ajr.jahid@gmail.com', '$2y$10$bv72JFXaxtwY9jEL4DDQIOHQ04x6vpyTnTID/epazvETF5cwc72YO', '123456', 1, '2017-05-20 07:12:52', '9Ej6OcSG7QqbCfxtjZsHqizXDy7JmaMdAsp398F1P7K2RZDE3M4xjATT2lhs', '', '2017-05-04 13:26:08', '2017-05-21 12:11:24'),
+(5, 'emon', 'ajr.jahid@gmail.com', '$2y$10$bv72JFXaxtwY9jEL4DDQIOHQ04x6vpyTnTID/epazvETF5cwc72YO', '123456', 1, '2017-05-20 07:12:52', 'xdzMSkAnzdyBlubDJN0O1TIfTOJRkzsJl9fq6VHAcMr0Pr7La9XHdzCnQY2b', '', '2017-05-04 13:26:08', '2017-05-21 12:11:24'),
 (12, 'MD ANWAR JAHID', 'ajr.jahifd@gmail.com', '$2y$10$PcgXOgn.W.tEppk90iaMLeHAIbuSPvbolsxyAk/lP9PaEVXNfL5Yu', '123456', 1, NULL, NULL, 'kBUAPB49IHtiyfLajvJNl2B6gbG4fzYbUtqE0VSt', '2017-05-08 04:28:17', '2017-05-08 04:28:17'),
 (33, 'anwar', 'bdtigerwin@gmail.com', '$2y$10$bv72JFXaxtwY9jEL4DDQIOHQ04x6vpyTnTID/epazvETF5cwc72YO', '123456', 1, NULL, 'zNlsGKU6mI3mGWOzFbgkQaS9rVbbph0BaKAdpUzVbC19i2iVYer3Vd0e4UpS', '', '2017-05-08 05:57:18', '2017-05-08 05:57:29'),
 (34, 'Anwar', 'idbjobportal@gmail.com', '$2y$10$OiuFXcdB2WBujID3.yCz7OTYbttCqaAR0mAMR2tCJcrUjDUO13qjC', 'idb', 1, NULL, NULL, 'AnpqICF8hDJHStZ2zdNdnVMFmYspAZvsR0Ai9Bhp', '2017-05-14 23:23:18', '2017-09-11 15:45:33'),
@@ -881,7 +881,7 @@ INSERT INTO `jobseekers` (`id`, `name`, `email`, `password`, `status`, `remember
 (3, 'babu vai', 'babu@gmail.com', '$2y$10$BPal9VeVPSrmoHD8QdmJue1g4cFx6eYYCHPu7qhUA0HoO.0MqqiTO', 1, NULL, NULL, '0000-00-00 00:00:00', '2017-05-01 23:50:21', '2017-05-04 20:53:28'),
 (8, 'imran', 'sadf@gamilc.omc', '$2y$10$25oT0U87XCY7valC8s8bwOLOq2M0P8GQvUV1cw2U9k4XZahtYQ6bq', 1, NULL, NULL, '0000-00-00 00:00:00', '2017-05-03 19:45:15', '2017-05-04 20:53:21'),
 (9, 'emon', 'sadf@gamilc.omca', '$2y$10$SvGKQasULT1bNFAqZPqs3uqxKp3ozEHuok8MtRgh9V1emQjB8wbqS', 1, NULL, NULL, '0000-00-00 00:00:00', '2017-05-03 19:45:49', '2017-05-04 20:53:21'),
-(10, 'MD ANWAR JAHID', 'ajr.jahid@gmail.com', '$2y$10$x0JPc0jR71BpDR0JDgsSweXV8XcXF419gVv9SJhZkec.e6M1EuQZ2', 1, 'Vf5q5rjNt9kPRxtWZubBswaoIE9oJ0UsMEBpgQnTYpYIqdh5vxRWaw05sRk2', NULL, '2017-05-20 08:02:31', '2017-05-05 08:51:41', '2017-05-20 08:02:31'),
+(10, 'MD ANWAR JAHID', 'ajr.jahid@gmail.com', '$2y$10$x0JPc0jR71BpDR0JDgsSweXV8XcXF419gVv9SJhZkec.e6M1EuQZ2', 1, 'SxqmH5dhrDCqr5ywiGxQjMEBIUwNLhTTswiffynPY4ugw9cbpCxNKecTA2TM', NULL, '2017-05-20 08:02:31', '2017-05-05 08:51:41', '2017-05-20 08:02:31'),
 (11, 'asmaul hasnat', 'ahsweet92@gmail.com', '$2y$10$PADb/2qxdBRWN55AkYf4UuHWEfZc93MziyIr9DqTr8cQQjth71tZ2', 1, 'q7nC6kLbVabvbJZFW91xnMHhCUDaoZLs4o80OrEmSwr2rrBQxcSEosYVoVAe', NULL, '2017-05-19 20:35:52', '2017-05-19 20:35:06', '2017-05-19 20:35:52'),
 (12, 'masruba', 'masrubajan25@gmail.com', '$2y$10$ofIFiuil/R10xKG.dTJK0OZs5/9rlfSYiXhWs2XfNJbQgKDNGrUhy', 1, NULL, NULL, '2017-05-19 20:53:18', '2017-05-19 20:37:09', '2017-05-19 20:53:18'),
 (13, 'Iqbal Hossain', 'iqbal700049@gmail.com', '$2y$10$j35ioa.fwZe08lo5/XLFFuqYR02TUa8oUEPY5f/yGj4pZ1knBlJhy', 1, 'zioMelmjmaFglKthEgfRvKzbeRH8lcWZk2QVBgZlJObr9i2CQpaqxrtl4ao8', NULL, NULL, '2017-05-21 11:33:42', '2017-05-21 11:33:42'),
@@ -2314,7 +2314,60 @@ INSERT INTO `logdatas` (`id`, `employer_id`, `jobseeker_id`, `guest_ip`, `links`
 (1260, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/profile/5', '2017-10-09 03:01:58', NULL),
 (1261, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/logout', '2017-10-09 03:02:00', NULL),
 (1262, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/employer/login', '2017-10-09 03:02:00', NULL),
-(1263, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-10-09 03:02:20', NULL);
+(1263, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-10-09 03:02:20', NULL),
+(1264, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-08 11:47:15', NULL),
+(1265, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker', '2017-11-08 11:49:05', NULL),
+(1266, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-08 11:49:06', NULL),
+(1267, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/employer/login', '2017-11-08 11:49:22', NULL),
+(1268, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/profile/5', '2017-11-08 11:49:23', NULL),
+(1269, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/profile/5', '2017-11-08 11:49:26', NULL),
+(1270, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/managejobs', '2017-11-08 11:49:31', NULL),
+(1271, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/showjob', '2017-11-08 11:49:34', NULL),
+(1272, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/details', '2017-11-08 11:49:37', NULL),
+(1273, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/details', '2017-11-08 11:49:44', NULL),
+(1274, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/details', '2017-11-08 11:49:47', NULL),
+(1275, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/profile/5', '2017-11-08 11:49:51', NULL),
+(1276, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/profile/5', '2017-11-08 11:49:52', NULL),
+(1277, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer', '2017-11-08 11:49:55', NULL),
+(1278, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer', '2017-11-08 11:49:58', NULL),
+(1279, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/applicantlist', '2017-11-08 11:51:44', NULL),
+(1280, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/applicantlist', '2017-11-08 11:51:45', NULL),
+(1281, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/applicantlist', '2017-11-08 11:52:10', NULL),
+(1282, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/applicantlist', '2017-11-08 11:52:11', NULL),
+(1283, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/applicantlist', '2017-11-08 11:52:16', NULL),
+(1284, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/applicantlist', '2017-11-08 11:52:17', NULL),
+(1285, 5, NULL, NULL, 'http://bdtiger.win/database/public/employer/logout', '2017-11-08 11:55:45', NULL),
+(1286, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/employer/login', '2017-11-08 11:55:45', NULL),
+(1287, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-08 11:56:19', NULL),
+(1288, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/resume/edit', '2017-11-08 12:02:30', NULL),
+(1289, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-08 12:02:31', NULL),
+(1290, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-08 12:02:53', NULL),
+(1291, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/resume/edit', '2017-11-09 03:16:59', NULL),
+(1292, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-09 03:16:59', NULL),
+(1293, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-12 06:06:57', NULL),
+(1294, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker', '2017-11-17 14:13:06', NULL),
+(1295, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-17 14:13:06', NULL),
+(1296, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker', '2017-11-17 14:13:11', NULL),
+(1297, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-17 14:13:11', NULL),
+(1298, NULL, NULL, '163.53.149.98', 'http://bdtiger.win/database/public/jobseeker/login', '2017-11-17 14:13:25', NULL),
+(1299, NULL, NULL, '163.53.149.98', 'http://www.bdtiger.win/database/public/employer', '2017-12-04 08:50:44', NULL),
+(1300, NULL, NULL, '163.53.149.98', 'http://www.bdtiger.win/database/public/employer/login', '2017-12-04 08:50:44', NULL),
+(1301, NULL, NULL, '163.53.149.98', 'http://www.bdtiger.win/database/public/employer/login', '2017-12-04 08:50:53', NULL),
+(1302, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/profile/5', '2017-12-04 08:50:54', NULL),
+(1303, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/profile/5', '2017-12-04 08:50:57', NULL),
+(1304, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/managejobs', '2017-12-04 08:50:58', NULL),
+(1305, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/showjob', '2017-12-04 08:51:01', NULL),
+(1306, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/managejobs', '2017-12-04 08:51:03', NULL),
+(1307, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer', '2017-12-04 08:52:27', NULL),
+(1308, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer', '2017-12-04 08:52:30', NULL),
+(1309, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/applicantlist', '2017-12-04 08:53:28', NULL),
+(1310, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/applicantlist', '2017-12-04 08:53:31', NULL),
+(1311, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/applicantlist', '2017-12-04 08:53:50', NULL),
+(1312, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/applicantlist', '2017-12-04 08:53:51', NULL),
+(1313, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/profile/5', '2017-12-04 08:53:58', NULL),
+(1314, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/profile/5', '2017-12-04 08:53:59', NULL),
+(1315, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/profile/5', '2017-12-04 09:14:40', NULL),
+(1316, 5, NULL, NULL, 'http://www.bdtiger.win/database/public/employer/profile/5', '2017-12-04 09:14:42', NULL);
 
 -- --------------------------------------------------------
 
@@ -3188,7 +3241,7 @@ ALTER TABLE `levelofeducations`
 -- AUTO_INCREMENT for table `logdatas`
 --
 ALTER TABLE `logdatas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1264;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1317;
 --
 -- AUTO_INCREMENT for table `messages`
 --
