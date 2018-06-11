@@ -69,7 +69,10 @@ class jobseekerController extends Controller
 
         if (count($item)>0) {
             $items=$item;
-        }
+        }else{
+		$items = [];
+	}
+	
        if(count($this->getexamtitle())>0){
         $getexamtitle=$this->getexamtitle();
        }
