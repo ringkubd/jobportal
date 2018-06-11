@@ -13,7 +13,7 @@
 						<div class="col-sm-12">
 							<table class="table table-bordered" id="carrer_table">
 								<tbody>
-								@if(!isset($personaldetails['message']))
+								@if(!isset($personaldetails['message']) && !empty($items))
 									<tr>
 										<th>Objective:</th>
 										<td>{{$items[0]->career_objective}}</td>
