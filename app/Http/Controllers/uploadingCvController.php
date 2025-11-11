@@ -1,131 +1,79 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\cv;
-use Auth;
-use File;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Response;
-use DB;
+use Illuminate\View\View;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\PhpWord;
 
 class uploadingCvController extends Controller
 {
-	public function __construct()
-	{
-		$this->middleware('jobseeker');
-	}
-
-
-
-	//loading cv upload page
-    public function uploadingPage()
+    public function __construct()
     {
-    	// jobseeker id
-    	$jobseeker_id 	=  Auth::guard('jobseeker')->user()->id;
-
-
-    	$cvObject 		= $this->retriveCv($jobseeker_id);
-    	$cv = !$cvObject?'no':$cvObject[0];
-    	 
-    	return view('jobseeker.uploadingCv',compact('cv'));
+        $this->middleware('jobseeker');
     }
 
-
-
-    //uploading cv
-    public function cvUpload(Request $request)
+    public function uploadingPage(): View
     {
-    	switch ($request->action) {
-    		case 'jobseeker_cv':
-    			$ida = Auth::guard('jobseeker')->user()->id;
-
-		        $file = $request->file('inputCv');
-
-		        $extension=$request->inputCv->extension();
-		        $size = file::size($file)/1024;
-		        if ($extension=='doc' || $extension=='pdf' && $size<500) {
-		        	$unique_image=$ida.".".$extension;
-				    $request->inputCv->storeAs('/public/cv/',$unique_image);
-				    $cvStore = DB::table('cvs')->insert(['jobseeker_id'=>$ida,'cv_name'=>$unique_image]);
-				    return 'Cv upload Succesfully';
-		        }else{
-		        	return 'false';
-		        }
-		        
-    			
-    			break;
-    		
-    		default:
-    			# code...
-    			break;
-    	}
+        $jobseekerId = auth('jobseeker')->id();
+        $cv = cv::where('jobseeker_id', $jobseekerId)->first();
+        return view('jobseeker.uploadingCv', compact('cv'));
     }
 
-    //view uploaded cv
-
-    public function showuploadedcv()
+    public function cvUpload(Request $request): Response
     {
-    	$ida = Auth::guard('jobseeker')->user()->id;
-    	$filename = cv::where('jobseeker_id',$ida)->pluck('cv_name');
-    	$file='storage/cv/'.$filename[0];
-    	if (File::isFile($file))
-		{
-		    $file = File::get($file);
-		    $response = Response::make($file, 200);
-		    // using this will allow you to do some checks on it (if pdf/docx/doc/xls/xlsx)
-		    $response->header('Content-Type', 'application/pdf');
+        $request->validate([
+            'inputCv' => 'required|file|mimes:doc,pdf|max:500',
+        ]);
 
-		    return $response;
-		}else{
-			dump('no');
-		}
+        $jobseekerId = auth('jobseeker')->id();
+        $file = $request->file('inputCv');
+        $extension = $file->extension();
+        $uniqueName = $jobseekerId . '.' . $extension;
 
-		// Or to download
+        $file->storeAs('public/cv', $uniqueName);
 
-		// if (File::isFile($file))
-		// {
-		//     return Response::download($file, $file_name);
-		// }
-// 		$content_types = [
-//     'application/octet-stream', // txt etc
-//     'application/msword', // doc
-//     'application/vnd.openxmlformats-officedocument.wordprocessingml.document', //docx
-//     'application/vnd.ms-excel', // xls
-//     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
-//     'application/pdf', // pdf
-// ];
+        cv::updateOrCreate(
+            ['jobseeker_id' => $jobseekerId],
+            ['cv_name' => $uniqueName]
+        );
+
+        return response('Cv upload Succesfully');
     }
 
-    public function createDoc(){
-    	// Creating the new document...
-		$phpWord = new \PhpOffice\PhpWord\PhpWord();
+    public function showuploadedcv(): Response
+    {
+        $jobseekerId = auth('jobseeker')->id();
+        $cv = cv::where('jobseeker_id', $jobseekerId)->firstOrFail();
+        $filePath = storage_path('app/public/cv/' . $cv->cv_name);
 
-		/* Note: any element you append to a document must reside inside of a Section. */
+        if (!File::exists($filePath)) {
+            abort(404);
+        }
 
-		 // Adding an empty Section to the document...
-		$section = $phpWord->addSection();
+        $fileContents = File::get($filePath);
+        $mimeType = File::mimeType($filePath);
 
-		// Adding Text element to the Section having font styled by default...
-		$section->addText(('ABCD'));
-
-		$section = $phpWord->addSection();
-		$section->addText(('<h2><abcd>HAHAHAHAHA</abcd></h2>'));
-
-		// Saving the document as HTML file...
-		$objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'HTML');
-		$objWriter->save('abcd.html');
+        return new Response($fileContents, 200, ['Content-Type' => $mimeType]);
     }
 
-    //retrive cv
-    private function retriveCv($jobseeker_id)
+    public function createDoc(): void
     {
-    	$cvObject = DB::table('cvs')->where('jobseeker_id',$jobseeker_id)->get();
-    	if (count($cvObject)>0) {
-    		return $cvObject;
-    	}else{
-    		return false;
-    	}
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+        $section->addText('ABCD');
+
+        $section = $phpWord->addSection();
+        $section->addText('<h2><abcd>HAHAHAHAHA</abcd></h2>');
+
+        $objWriter = IOFactory::createWriter($phpWord, 'HTML');
+        $objWriter->save('abcd.html');
     }
 }

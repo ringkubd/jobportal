@@ -1,496 +1,303 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\personaldetails;
-use Auth;
+use App\academic;
 use App\applicationinfo;
+use App\block;
 use App\catagory;
 use App\empprofile;
-use App\block;
 use App\follower;
-use App\academic;
-use App\exam_title;
-use App\extraactivities;
-use DB;
+use App\Jobseeker;
+use App\js_reference;
+use App\personaldetails;
+use App\specialization;
+use App\training;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
+
 class jobseekerController extends Controller
 {
     public function __construct()
     {
         $this->middleware('jobseeker');
-    } 
-
-// get index value
-
-    public function index(){
-
-        $catagories=catagory::all();
-        
-        $jid=Auth::guard('jobseeker')->user()->id;
-
-        $personaldetail = personaldetails::where('jobseeker_id',$jid)->get();
-
-        $levelofeducation = $this->get_levelof_education($jid);
-
-        $academicsdata = $this->getacademic($jid);
-
-        if (count($academicsdata)>0){
-            $levelNames =[];
-            foreach($academicsdata as $acadata) {
-                $levelNames[$acadata->lavelofeducation_id] = $this->getLevelName($acadata->lavelofeducation_id);
-            }
-
-        }
-
-
-        if (count($academicsdata)>0 && isset($academicsdata[0]->exam_title_id)) {
-            $examtitlename =[];
-            foreach($academicsdata as $acadata) {
-                $examtitlename[$acadata->exam_title_id] = $this->getexamName($acadata->exam_title_id);
-            }
-  
-        }
-
-        if (count($academicsdata)>0 && isset($academicsdata[0]->groupormajor_id)) {
-            $majorename =[];
-            foreach($academicsdata as $acadata) {
-                $majorename[$acadata->groupormajor_id] = $this->getmajorname($acadata->groupormajor_id);
-            }
-
-  
-       }
-        
-    
-        if (count($personaldetail)>0) {
-            $personaldetails=$personaldetail[0];
-        }
-        $item = applicationinfo::where('jobseeker_id',$jid)->get();
-
-        if (count($item)>0) {
-            $items=$item;
-        }else{
-		$items = [];
-	}
-	
-       if(count($this->getexamtitle())>0){
-        $getexamtitle=$this->getexamtitle();
-       }
-
-       if(count($this->getgroup())>0){
-        $getgroup=$this->getgroup();
-       }
-
-      $get_skill = $this->get_skill($jid);
-
-      $get_training=$this->get_training_info($jid);
-
-      $get_refference = $this->get_refference_info($jid);
-
-      $extraActivities=$this->extraActivities();
-       
-
-    	return view('jobseeker.dashboard.dashboard',compact('levelofeducation','personaldetails','items','catagories','academicsdata','levelNames','examtitlename','majorename','getexamtitle','getgroup','get_skill','get_training','get_refference','extraActivities'));
     }
 
-
-    private function get_levelof_education($jobseeker_id)
+    public function index(): View
     {
-        $levelofeducation =  DB::table('levelofeducations')->pluck('edulavelname','id');
+        $jobseekerId = auth('jobseeker')->id();
+        $jobseeker = Jobseeker::with([
+            'personaldetail',
+            'applicationinfo',
+            'academics.levelofeducation',
+            'academics.examtitle',
+            'academics.groupormajor',
+            'skills',
+            'trainings',
+            'references',
+            'extraactivities'
+        ])->findOrFail($jobseekerId);
 
-        if (count($levelofeducation)>0) {
-            return $levelofeducations=$levelofeducation;
-        }else{
-            return $levelofeducations = ['message'=>'No data found'];
-        }
+        $categories = catagory::all();
+        $levelofeducations = DB::table('levelofeducations')->pluck('edulavelname', 'id');
+        $examtitles = DB::table('exam_titles')->pluck('name', 'id');
+        $groups = DB::table('groupoormajors')->pluck('groupname', 'id');
+
+        return view('jobseeker.dashboard.dashboard', [
+            'jobseeker' => $jobseeker,
+            'personaldetails' => $jobseeker->personaldetail,
+            'items' => $jobseeker->applicationinfo,
+            'academicsdata' => $jobseeker->academics,
+            'get_skill' => $jobseeker->skills,
+            'get_training' => $jobseeker->trainings,
+            'get_refference' => $jobseeker->references,
+            'extraActivities' => $jobseeker->extraactivities->pluck('details')->flatMap(fn ($item) => explode(',', $item)),
+            'catagories' => $categories,
+            'levelofeducation' => $levelofeducations,
+            'getexamtitle' => $examtitles,
+            'getgroup' => $groups,
+        ]);
     }
 
-// jobseeker profile update
+    public function infoupdate(Request $request): JsonResponse|string|RedirectResponse
+    {
+        $jobseekerId = auth('jobseeker')->id();
 
-
-    public function infoupdate(Request $request){
-
-    	$jid=Auth::guard('jobseeker')->user()->id;
-        
-        
-         switch ($request->action) {
-
-
-
-
+        switch ($request->action) {
             case 'showexamtitle':
-                $examtitle=DB::table('exam_titles')->select('name','id')->where('levelofeducation_id',$request->id)->get();
-                return response()->json($examtitle);
-                break;
+                $examtitles = DB::table('exam_titles')->where('levelofeducation_id', $request->id)->get(['name', 'id']);
+                return response()->json($examtitles);
+
             case 'showgroup_mejor':
-                $group=DB::table('groupoormajors')->select('groupname','id')->where('exam_title_id',$request->exam_title_id)->get();
-                //$group=DB::table('groupoormajors')->where('exam_title_id',$request->exam_title_id)->pluck('groupname','id');
-                
-                return $group;
-                break;
-           
+                $groups = DB::table('groupoormajors')->where('exam_title_id', $request->exam_title_id)->get(['groupname', 'id']);
+                return response()->json($groups);
+
             case 'pinfoupdate':
-                $personaldetail = personaldetails::where('jobseeker_id',$jid)->get();
-                $personaldetails=$personaldetail[0];
-                $personaldetails->full_name=$request->full_name;
-                $personaldetails->jobseeker_father_name=$request->jobseeker_father_name;
-                //return "ok";
-                $personaldetails->jobseeker_mother_name=$request->jobseeker_mother_name;
-                $personaldetails->jobseeker_dob=$request->jobseeker_dob;
-                $personaldetails->jobseeker_gender=$request->jobseeker_gender;
-                $personaldetails->jobseeker_maritalstatus=$request->jobseeker_maritalstatus;
-                $personaldetails->jobseeker_nationality=$request->jobseeker_nationality;
-                $personaldetails->jobseeker_national_id_no=$request->jobseeker_national_id_no;
-                $personaldetails->jobseeker_religion=$request->jobseeker_religion;
-                $personaldetails->jobseeker_permanent_address=$request->jobseeker_permanent_address;
-                $personaldetails->jobseeker_current_address=$request->jobseeker_current_address;
-                $personaldetails->jobseeker_current_location=$request->jobseeker_current_location;
-                $personaldetails->jobseeker_phone1=$request->jobseeker_phone1;
-                $personaldetails->jobseeker_phone2=$request->jobseeker_phone2;
-                $personaldetails->jobseeker_email=$request->jobseeker_email;
-                $personaldetails->jobseeker_email2=$request->jobseeker_email2;
-                //return $personaldetails;
-                //return "ok";
-                $personaldetails->save();
-                //refresh purpose for particular area of dashboard tab-pane
+                $personaldetail = personaldetails::where('jobseeker_id', $jobseekerId)->firstOrFail();
+                $validatedData = $request->validate([
+                    'full_name' => 'required|string|max:255',
+                    'jobseeker_father_name' => 'required|string|max:255',
+                    'jobseeker_mother_name' => 'required|string|max:255',
+                    'jobseeker_dob' => 'required|date',
+                    'jobseeker_gender' => 'required|string',
+                    'jobseeker_maritalstatus' => 'required|string',
+                    'jobseeker_nationality' => 'required|string',
+                    'jobseeker_national_id_no' => 'nullable|string',
+                    'jobseeker_religion' => 'required|string',
+                    'jobseeker_permanent_address' => 'required|string',
+                    'jobseeker_current_address' => 'required|string',
+                    'jobseeker_current_location' => 'required|string',
+                    'jobseeker_phone1' => 'required|string',
+                    'jobseeker_phone2' => 'nullable|string',
+                    'jobseeker_email' => 'required|email',
+                    'jobseeker_email2' => 'nullable|email',
+                ]);
+                $personaldetail->update($validatedData);
                 return "#personal-tab";
 
-                 break;
-                 case 'cinfoupdate':
-                     $items = applicationinfo::where('jobseeker_id',$jid)->get();
-                     $item=$items[0];
-                     $item->career_summary=$request->career_summary;
-                     $item->special_qualification=$request->special_qualification;
-                     $item->preferred_job_category=$request->preferred_job_category;
-                     $item->preferred_district=$request->preferred_district;
-                     $item->preferred_division=$request->preferred_division;
-                     $item->preferred_organization_type=$request->preferred_organization_type;
-                     $item->career_objective=$request->objective;
-                     $item->lookingfor=$request->looking_for;
-                     $item->availablefor=$request->available_for;
-                     $item->presentsalary=$request->present_salary;
-                     $item->expectedsalary=$request->expected_salary;
-                     $item->save();
+            case 'cinfoupdate':
+                $applicationinfo = applicationinfo::where('jobseeker_id', $jobseekerId)->firstOrFail();
+                $validatedData = $request->validate([
+                    'career_summary' => 'required|string',
+                    'special_qualification' => 'required|string',
+                    'preferred_job_category' => 'required|string',
+                    'preferred_district' => 'required|string',
+                    'preferred_division' => 'required|string',
+                    'preferred_organization_type' => 'required|string',
+                    'objective' => 'required|string', // career_objective
+                    'looking_for' => 'required|string',
+                    'available_for' => 'required|string',
+                    'present_salary' => 'nullable|numeric',
+                    'expected_salary' => 'nullable|numeric',
+                ]);
+                $applicationinfo->update($validatedData);
+                return "#personal-tab";
 
-                 return "#personal-tab";
-                 break;
-                 case 'education_infoupdate':
-                    $academics = new academic;
-                    $academics->jobseeker_id            =$jid;
-                    $academics->lavelofeducation_id     = $request->lavelofeducation_id;
-                    $academics->groupormajor_id         = $request->groupormajor_id;
-                    $academics->exam_title_id           = $request->exam_title_id;
-                    $academics->result                  = $request->result;
-                    $academics->marks                   = $request->marks;
-                    $academics->institute               = $request->institute;
-                    $academics->passing_year            = $request->passing_year;
-                    $academics->duration                = $request->duration;
-                    $academics->achievment              = $request->achievment;
-                    $academics->save();
-                    return 'Successfully Inserted';
+            case 'education_infoupdate':
+                $validatedData = $this->validateAcademic($request);
+                $validatedData['jobseeker_id'] = $jobseekerId;
+                academic::create($validatedData);
+                return response()->json(['message' => 'Successfully Inserted']);
 
-                 break;
-                case 'update_academic':
-                 return $edit_academicdetails=DB::table('academics')->where('id',$request->edit_academicid)->get();
-                 break;
+            case 'update_academic':
+                return academic::findOrFail($request->edit_academicid);
 
-                case 'education_editandupdate':
-                //return 'abcd';
-                    $academics=academic::where("id",$request->edit_academicid)->get();
-                    //return $academics[0];
-                    if (isset($request->lavelofeducation_id) && $request->lavelofeducation_id !=Null) {
-                       $academics[0]->lavelofeducation_id     = $request->lavelofeducation_id;
-                    }
-                     if (isset($request->groupormajor_id) && $request->groupormajor_id !=Null) {
-                       $academics[0]->groupormajor_id         = $request->groupormajor_id;
-                    }
-                    if (isset($request->exam_title_id) && $request->exam_title_id !=Null) {
-                       $academics[0]->exam_title_id           = $request->exam_title_id;
-                    }
+            case 'education_editandupdate':
+                $academic = academic::findOrFail($request->edit_academicid);
+                $validatedData = $this->validateAcademic($request);
+                $academic->update($validatedData);
+                return response()->json(['message' => 'Successfully Updated']);
 
-                    $academics[0]->jobseeker_id            =$jid;
-                    $academics[0]->result                  = $request->result;
-                    $academics[0]->marks                   = $request->marks;
-                    $academics[0]->institute               = $request->institute;
-                    $academics[0]->passing_year            = $request->passing_year;
-                    $academics[0]->duration                = $request->duration;
-                    $academics[0]->achievment              = $request->achievment;
-                    $academics[0]->save();
-                    return 'Successfully Updated';
-                break; 
-                case 'skill_insert':
-                        if(DB::table('specializations')->insert([
-                                                    'jobseeker_id'=>$request->jobseeker_id,
-                                                    'specializationorskill'=>$request->specializationorskill,
-                                                    'skilldescription'=>$request->skilldescription,
-                                                    ])){
-                            return 'Succesfully Inserted';
-                        };
+            case 'skill_insert':
+                $validatedData = $request->validate([
+                    'specializationorskill' => 'required|string|max:255',
+                    'skilldescription' => 'required|string',
+                ]);
+                specialization::create([
+                    'jobseeker_id' => $jobseekerId,
+                    'specializationorskill' => $validatedData['specializationorskill'],
+                    'skilldescription' => $validatedData['skilldescription'],
+                ]);
+                return response()->json(['message' => 'Successfully Inserted']);
 
+            case 'skill_delete':
+                specialization::findOrFail($request->delid)->delete();
+                return response()->json(['message' => 'Data deleted successfully']);
 
-                       # code...
-                       break;  
+            case 'training_insert':
+                $validatedData = $this->validateTraining($request);
+                $validatedData['jobseeker_id'] = $jobseekerId;
+                training::create($validatedData);
+                return response()->json(['message' => 'Successfully Inserted']);
 
-                case 'skill_delete':
-                   if(DB::table('specializations')->delete($request->delid)){
-                    return "data deleted successfully";
-                   }
-                   break;
-                case 'training_insert':
-                if(DB::table('trainings')->insert([
-                                                    'jobseeker_id'=>$jid,
-                                                    'training_title'=>$request->training_title,
-                                                    'topic'=>$request->topic,
-                                                    'institute'=>$request->institute,
-                                                    'location'=>$request->location,
-                                                    'country'=>$request->country,
-                                                    'year'=>$request->year,
-                                                     'duration'=>$request->duration,
-                                                    ])){
-                            return 'Succesfully Inserted';
-                    }
-                   break;
-                case 'training_delete':
-                if(DB::table('trainings')->delete($request->delid)){
-                    return "data deleted successfully";
-                   }
-                break;
+            case 'training_delete':
+                training::findOrFail($request->delid)->delete();
+                return response()->json(['message' => 'Data deleted successfully']);
 
-                case 'refference_insert':
-                    if(DB::table('js_references')->insert([
-                            'jobseeker_id'=>$jid,
-                            'reference_name'=>$request->reference_name,
-                            'disignation' =>$request->disignation,
-                            'organization' =>$request->organization,
-                            'address' =>$request->address,
-                            'office_phone' =>$request->office_phone,
-                            'home_phone' =>$request->home_phone,
-                            'mobile' =>$request->mobile,
-                            'email' =>$request->email,
-                            'relation' =>$request->relation,
-                        ])){
+            case 'refference_insert':
+                $validatedData = $this->validateReference($request);
+                $validatedData['jobseeker_id'] = $jobseekerId;
+                js_reference::create($validatedData);
+                return response()->json(['message' => 'Data inserted successfully']);
 
-                        return "data inserted successfully";
-                    }
-                    break;
+            case 'refference_delete':
+                js_reference::findOrFail($request->delid)->delete();
+                return response()->json(['message' => 'Data deleted successfully']);
 
-                case 'refference_delete':
-                    if(DB::table('js_references')->delete($request->delid)){
-                    return "data deleted successfully";
-                   }
-                    break;
-                
-             default:
-                 return 'no';
-                 break;
-         }
-		
-    	
-
-
-
-
-
-    }
-    private function getexamtitle(){
-        return $getexamtitle=exam_title::pluck('name','id');
+            default:
+                return response()->json(['message' => 'Invalid action'], 400);
+        }
     }
 
-
-    private function getgroup(){
-        return $getexamtitle=DB::table('groupoormajors')->pluck('groupname','id');
-
-    }
-
-
-
-
-
-
-public function employerlist(){
-    $jobseekerid= Auth::guard('jobseeker')->user()->id;
-    $catagories=catagory::all();
-    $company=empprofile::all();
-     $block_id=block::where('jobseeker_id',$jobseekerid)->pluck('employer_id');
-     $array=[];
-    foreach($block_id as $block){
-       array_push($array, $block);
-    }
-
-  
-
-
-  
-    // $a=[1,2,3];
-    // if(in_array(2,$a)){
-    //     return "true";
-    // }
-    // else{
-    //     return "false";
-    // }
-    return view('jobseeker.companyname',compact('company','array','catagories'));
-
-}
-
-public function blockemp($id){
-   $jobseekerid= Auth::guard('jobseeker')->user()->id;
-    $block=new block;
-    $block->jobseeker_id=$jobseekerid;
-    $block->employer_id=$id;
-    $block->save();
-   
-    return redirect('/jobseeker/blockEmployer');
-}
-public function unblockemp($id){
-    //return $id;
-    $jobseekerid= Auth::guard('jobseeker')->user()->id;
-    $unblockid= block::where('jobseeker_id',$jobseekerid)->where('employer_id',$id)->pluck('id');
-   //$block=new block;
-  if(block::destroy($unblockid)){
- 
-    return redirect('/jobseeker/blockEmployer');
-  }
-}
-
-
-public function femployerlist(){
-    $jobseekerid= Auth::guard('jobseeker')->user()->id;
-     $block_id=block::where('jobseeker_id',$jobseekerid)->pluck('employer_id');
-    
-    $catagories=catagory::all();
-    $company=empprofile::whereNotIn('employer_id',$block_id)->get();
-     $follow_id=follower::where('jobseeker_id',$jobseekerid)->pluck('employer_id');
-     $array=[];
-    foreach($follow_id as $follow){
-       array_push($array, $follow);
-}
-    return view('jobseeker.followercompanyname',compact('company','array','catagories'));
-
-
-
-
-}
-public function followemp($id){
-
-    $jobseekerid= Auth::guard('jobseeker')->user()->id;
-    $follow=new follower;
-    $follow->jobseeker_id=$jobseekerid;
-    $follow->employer_id=$id;
-    $follow->save();
- return redirect('/jobseeker/followEmployer');
-}
-
-
-public function unfollowemp($id){
-
-   $jobseekerid= Auth::guard('jobseeker')->user()->id;
-    $unfollowid= follower::where('jobseeker_id',$jobseekerid)->where('employer_id',$id)->pluck('id');
-
-  if(follower::destroy($unfollowid)){
- 
-    return redirect('/jobseeker/followEmployer');
-  }
-}
-
-
-
-//Academic Data..........
-private function getacademic($id){
-    $academicData = DB::table('academics')->where('jobseeker_id',$id)->get();
-    return $academicData;
-
-}
-
-private function getLevelName($levelId){
-    return $levelname = DB::table('levelofeducations')->where('id',$levelId)->pluck('edulavelname');
-}
-
-
-
-private function getmajorname($majorid){
-    $majorname = DB::table('groupoormajors')->where('id',$majorid)->pluck('groupname');
-    if(count($majorname)>0){
-        return $majorname;
-    }else{
-        return FALSE;
-    }
-}
-
-
-private function getexamName($examId){
-    return $examName = DB::table('exam_titles')->where('id',$examId)->pluck('name');
-}
-
-// Get skill info
-
-private function get_skill($jobseeker_id)
-{
-    $get_skill = DB::table('specializations')->where('jobseeker_id',$jobseeker_id)->get();
-    if (count($get_skill)>0) {
-        return $get_skill;
-    }else{
-        return FALSE;
-    }
-}
-
-
-private function get_training_info($jobseeker_id){
- $get_training = DB::table('trainings')->where('jobseeker_id',$jobseeker_id)->get();
-    if (count($get_training )>0) {
-        return $get_training;
-    }else{
-        return FALSE;
-    }
-
-
-}
-
-private function get_refference_info($jobseeker_id){
- $get_refference = DB::table('js_references')->where('jobseeker_id',$jobseeker_id)->get();
-    if (count($get_refference )>0) {
-        return $get_refference;
-    }else{
-        return FALSE;
-    }
-
-
-}
-
-
-    //upload profile image
-    public function jobseeker_img_upload(Request $request)
+    public function employerlist(): View
     {
-        $ida=Auth::guard('jobseeker')->user()->id;
-        $jobsekker = personaldetails::where('jobseeker_id',$ida)->get();
+        $jobseekerId = auth('jobseeker')->id();
+        $blockedEmployerIds = block::where('jobseeker_id', $jobseekerId)->pluck('employer_id')->toArray();
+        $companies = empprofile::all();
+        $categories = catagory::all();
 
-        $request->file('profile_image');
-        $extension=$request->profile_image->extension();
-        //return $extension;
-        $unique_image=$ida.".".$extension;
-        //return $unique_image;
-       //  if($jobsekker->profile_img)
-       // {
-       //     storage::delete('public/jobseeker_img/'.$jobsekker->profile_img);
-       //       //return 'echo';
-      
-       //  }
-        
-
-        $request->profile_image->storeAs('/public/jobseeker_img',$unique_image);
-        $jobsekker[0]->profile_img = $unique_image;
-        $jobsekker[0]->save();
+        return view('jobseeker.companyname', [
+            'company' => $companies,
+            'array' => $blockedEmployerIds,
+            'catagories' => $categories,
+        ]);
     }
-    // extra activities
-    private function extraActivities(){
-        $jobseekerId = Auth::guard('jobseeker')->user()->id;
-        $extraActivities = extraactivities::where('jobseeker_id', $jobseekerId)->get();
-        if(count($extraActivities)>0){
-        $array = explode(',', $extraActivities[0]->details);
-        return $array;
-       
-     
+
+    public function blockemp(int $employerId): RedirectResponse
+    {
+        block::firstOrCreate([
+            'jobseeker_id' => auth('jobseeker')->id(),
+            'employer_id' => $employerId,
+        ]);
+        return redirect('/jobseeker/blockEmployer');
     }
-  }
 
+    public function unblockemp(int $employerId): RedirectResponse
+    {
+        block::where('jobseeker_id', auth('jobseeker')->id())
+            ->where('employer_id', $employerId)
+            ->delete();
+        return redirect('/jobseeker/blockEmployer');
+    }
 
+    public function femployerlist(): View
+    {
+        $jobseekerId = auth('jobseeker')->id();
+        $blockedEmployerIds = block::where('jobseeker_id', $jobseekerId)->pluck('employer_id');
+        $followedEmployerIds = follower::where('jobseeker_id', $jobseekerId)->pluck('employer_id')->toArray();
+        $companies = empprofile::whereNotIn('employer_id', $blockedEmployerIds)->get();
+        $categories = catagory::all();
+
+        return view('jobseeker.followercompanyname', [
+            'company' => $companies,
+            'array' => $followedEmployerIds,
+            'catagories' => $categories,
+        ]);
+    }
+
+    public function followemp(int $employerId): RedirectResponse
+    {
+        follower::firstOrCreate([
+            'jobseeker_id' => auth('jobseeker')->id(),
+            'employer_id' => $employerId,
+        ]);
+        return redirect('/jobseeker/followEmployer');
+    }
+
+    public function unfollowemp(int $employerId): RedirectResponse
+    {
+        follower::where('jobseeker_id', auth('jobseeker')->id())
+            ->where('employer_id', $employerId)
+            ->delete();
+        return redirect('/jobseeker/followEmployer');
+    }
+
+    public function jobseeker_img_upload(Request $request): RedirectResponse
+    {
+        $request->validate(['profile_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+
+        $jobseekerId = auth('jobseeker')->id();
+        $personaldetail = personaldetails::where('jobseeker_id', $jobseekerId)->firstOrFail();
+        $image = $request->file('profile_image');
+        $imageName = $jobseekerId . '.' . $image->extension();
+
+        if ($personaldetail->profile_img && Storage::exists('public/jobseeker_img/' . $personaldetail->profile_img)) {
+            Storage::delete('public/jobseeker_img/' . $personaldetail->profile_img);
+        }
+
+        $image->storeAs('public/jobseeker_img', $imageName);
+        $personaldetail->profile_img = $imageName;
+        $personaldetail->save();
+
+        return back()->with('success', 'Image uploaded successfully.');
+    }
+
+    private function validateAcademic(Request $request): array
+    {
+        return $request->validate([
+            'lavelofeducation_id' => 'required|integer|exists:levelofeducations,id',
+            'groupormajor_id' => 'nullable|integer|exists:groupoormajors,id',
+            'exam_title_id' => 'required|integer|exists:exam_titles,id',
+            'result' => 'required|string',
+            'marks' => 'nullable|numeric',
+            'institute' => 'required|string',
+            'passing_year' => 'required|integer',
+            'duration' => 'nullable|string',
+            'achievment' => 'nullable|string',
+        ]);
+    }
+
+    private function validateTraining(Request $request): array
+    {
+        return $request->validate([
+            'training_title' => 'required|string|max:255',
+            'topic' => 'required|string|max:255',
+            'institute' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'year' => 'required|integer',
+            'duration' => 'required|string|max:255',
+        ]);
+    }
+
+    private function validateReference(Request $request): array
+    {
+        return $request->validate([
+            'reference_name' => 'required|string|max:255',
+            'disignation' => 'required|string|max:255',
+            'organization' => 'required|string|max:255',
+            'address' => 'required|string',
+            'office_phone' => 'nullable|string',
+            'home_phone' => 'nullable|string',
+            'mobile' => 'required|string',
+            'email' => 'required|email',
+            'relation' => 'required|string',
+        ]);
+    }
 }

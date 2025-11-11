@@ -1,85 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Auth;
-use DB;
+use App\Jobseeker;
 use App\jobseeker_contact_me;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
 class portfolioController extends Controller
 {
-     public function __construct()
+    public function index(int $jobseekerId): View
     {
-        //$this->middleware('jobseeker');
-    } 
-    public function index($jid){
-    	// $jid=Auth::guard('jobseeker')->user()->id;
-    	$js_banner_info=$this->showprimaryinfo($jid);
-    	 $js_sociallink=$this->showsociallink($jid);
-    	 $aboutme=$this->showaboutus($jid);
-    	 $skilldetails=$this->showskill($jid);
-    	 $workexperience=$this->showsjobexperience($jid);
-    	 $project=$this->showsproject($jid);
-    	return view('js_portofolio.inde',compact('js_banner_info','js_sociallink','aboutme','skilldetails','workexperience','project','jid'));
+        $jobseeker = Jobseeker::with([
+            'extraactivities',
+            'personaldetail',
+            'js_options',
+            'js_skills',
+            'js_workexperiences',
+            'js_projects'
+        ])->findOrFail($jobseekerId);
+
+        $socialLinks = $jobseeker->js_options->whereIn('option_name', ['facebook', 'linkedin', 'twitter', 'google-plus']);
+        $aboutMe = $jobseeker->js_options->where('slug', 'about_me')->first();
+
+        return view('js_portofolio.inde', [
+            'js_banner_info' => $jobseeker,
+            'js_sociallink' => $socialLinks,
+            'aboutme' => $aboutMe,
+            'skilldetails' => $jobseeker->js_skills,
+            'workexperience' => $jobseeker->js_workexperiences,
+            'project' => $jobseeker->js_projects,
+            'jid' => $jobseekerId,
+        ]);
     }
 
-    //show jobseeker information
-
-    private function showprimaryinfo($id){
-
-    	$primaryinfo=DB::table('jobseekers')->join('extraactivities','jobseekers.id','extraactivities.jobseeker_id')->join('personaldetails','jobseekers.id','personaldetails.jobseeker_id')->select('jobseekers.*','personaldetails.*','extraactivities.*')->where('jobseekers.id',$id)->get();
-    	return $js_primary_info=count($primaryinfo)>0?$primaryinfo:false;
-    }
-
-    private function showsociallink($id){
-    	$showlink=DB::table('js_option')->where('jobseeker_id',$id)->where(function ($query) {
-                $query->orWhere('option_name','facebook')->orWhere('option_name','linkedin')->orWhere('option_name','twitter')->orWhere('option_name','google-plus');
- })->get();
-    	$sociallink=count($showlink)?$showlink:false;
-	return $sociallink;
-
-    }
-
-    private function showaboutus($id){
-
-    	$aboutme=DB::table('js_option')->where('jobseeker_id',$id)->where('slug','about_me')->get();
-    	$aboutmedetails=count($aboutme)?$aboutme:false;
-	return $aboutmedetails;
-
-    }
-     private function showskill($id){
-
-    	$skill=DB::table('js_skill')->where('jobseeker_id',$id)->get();
-    	$skilldetails=count($skill)?$skill:false;
-	return $skilldetails;
-
-    }
-
-    private function showsjobexperience($id){
-
-    	$workexperience=DB::table('js_workexperience')->where('jobseeker_id',$id)->get();
-    	$workexperiencedetails=count($workexperience)?$workexperience:false;
-	return $workexperiencedetails;
-
-    }
-
-    private function showsproject($id){
-    	$project=DB::table('js_projects')->where('jobseeker_id',$id)->get();
-    	$projectedetails=count($project)?$project:false;
-	return $projectedetails;
-
-    }
-
-    public function contact_me(Request $request)
+    public function contact_me(Request $request): JsonResponse
     {
-        return $request->all();
-        if ($request->action == "ajax") {
-            jobseeker_contact_me::insert(['jobseekerid'=>$request->jobseekerid,'sendername'=>$request->sendername ,'senderemail'=>$request->senderemail ,'Number'=>$request->number ,'message'=>$request->message]);
-            return 'Message Send';
-        }
+        $validatedData = $request->validate([
+            'jobseekerid' => 'required|integer|exists:jobseekers,id',
+            'sendername' => 'required|string|max:255',
+            'senderemail' => 'required|email|max:255',
+            'number' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        jobseeker_contact_me::create($validatedData);
+
+        return response()->json(['message' => 'Message Sent']);
     }
-
-
-
 }
-

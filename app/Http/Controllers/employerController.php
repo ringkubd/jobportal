@@ -1,188 +1,82 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\country;
-use App\division;
-use App\district;
-use App\area;
 use App\empprofile;
-use Auth;
-class employerController  extends Controller
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class employerController extends Controller
 {
     public function __construct()
     {
         $this->middleware('employer');
-    } 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-       $country=(country::pluck('name','id'));
-       $division=(division::pluck('name','id'));
-       $district=(district::pluck('name','id'));
-       $area=(area::pluck('name','id'));
-
-       return view('employer.resume');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function index(): View
     {
-        //
+        return view('employer.resume');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function show($id): View
     {
-       
+        $employerId = auth('employer')->id();
+
+        $empdes = empprofile::query()
+            ->with(['country', 'division', 'district', 'area'])
+            ->where('employer_id', $employerId)
+            ->firstOrFail();
+
+        $industrytype = isset($empdes->industrytype) ? explode(',', $empdes->industrytype) : null;
+
+        return view('employer.resume', compact('empdes', 'industrytype'));
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function update(Request $request, $id): JsonResponse
     {
-        $ida = Auth::guard('employer')->user()->id;
+        $empprofile = empprofile::where('employer_id', $id)->firstOrFail();
 
-            //country::find(1)->division;
-            //division::find(1)->district;
-            //district::find(1)->area;
-            $data = empprofile::where('employer_id',$ida)->get();
-            //return dump($data[0]->country);
-            if ($data[0]->division && $data[0]->country && $data[0]->district) {
-                $empdeses=empprofile::join('countries','empprofiles.country','countries.id')->join('divisions','empprofiles.division','divisions.id')->join('areas','empprofiles.area','areas.id')->join('districts','empprofiles.district','districts.id')->select('empprofiles.*','countries.name As cname','divisions.name As dname','districts.name As disname','areas.name As aname')->where('empprofiles.employer_id',$ida)->get();
-            }
-            elseif ($data[0]->division && $data[0]->country) {
-                 $empdeses=empprofile::join('countries','empprofiles.country','countries.id')->join('divisions','empprofiles.division','divisions.id')->select('empprofiles.*','countries.name As cname','divisions.name As dname','districts.name As disname')->where('empprofiles.employer_id',$ida)->get();
-            }
-            elseif($data[0]->country) {
-                $empdeses=empprofile::join('countries','empprofiles.country','countries.id')->select('empprofiles.*','countries.name As cname')->where('empprofiles.employer_id',$ida)->get();
-            }else
-            {
-                if(empprofile::where('employer_id',$ida)->get()){
-                    $empdeses = empprofile::where('employer_id',$ida)->get();
-                }else{
-                    return 'abc';
-                };
-            }
-            
+        switch ($request->action) {
+            case 'companyinfo':
+                $validatedData = $request->validate([
+                    'companyname' => ['required', 'string', 'max:255'],
+                    'altcompanyname' => ['nullable', 'string', 'max:255'],
+                    'contactperson' => ['required', 'string', 'max:255'],
+                    'designation' => ['required', 'string', 'max:255'],
+                ]);
+                $empprofile->update($validatedData);
+                break;
 
-      $empdes = $empdeses[0];
-       isset($empdes->industrytype)?$industrytype = explode(',', $empdes->industrytype):NULL;
-       $country=(country::pluck('name','id'));
-       $division=(division::pluck('name','id'));
-       $district=(district::pluck('name','id'));
-       $area=(area::pluck('name','id'));
-       //return $empdes;
-
-      return view('employer.resume',compact('empdes','country','division','district','area','industrytype'));
-       //return $empdes;
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-
-    {  
-      
-
-        if($request->ajax())
-        {
-            $frff = empprofile::where('employer_id',$id)->get();
-            $empprofile=$frff[0];
-            //$empprofile = empprofile::find($id);
-            //return $empprofile[0];
-            
-
-
-            switch ($request->action) {
-                case 'companyinfo':
-                    $empprofile->companyname = $request->companyname;
-                    $empprofile->altcompanyname = $request->altcompanyname;
-                    $empprofile->contactperson = $request->contactperson;
-                    $empprofile->designation = $request->designation;
-                    $empprofile->save();
-                    break;
-                
-                case 'industrytype':
-                $empprofile->industrytype=implode(',',$request->industrytype);
-                //return $industrytype;
+            case 'industrytype':
+                $validatedData = $request->validate([
+                    'industrytype' => ['required', 'array'],
+                ]);
+                $empprofile->industrytype = implode(',', $validatedData['industrytype']);
                 $empprofile->save();
-                    
-                    break;
-                
-                case 'primaryaddress':
-                    $empprofile->companyaddress=$request->Companyaddress;
-                    $empprofile->country=$request->country;
-                    $empprofile->division=$request->division;
-                    $empprofile->district=$request->district;
-                    $empprofile->area=$request->area;
-                    $empprofile->billingaddress=$request->BillingAddress;
-                    $empprofile->ContactPhone=$request->ContactPhone;
-                    $empprofile->ContactEmail=$request->ContactEmail;
-                    $empprofile->websiteaddress=$request->WebsiteAddress;
-                    //$empprofile->companyaddress=$request->WebsiteAddress;
-                    //return $request->action;
-                    $empprofile->save();
-                    break;
-                
-                default:
-                    return "Woofs";
-                    break;
-            }
+                break;
 
+            case 'primaryaddress':
+                $validatedData = $request->validate([
+                    'Companyaddress' => ['required', 'string', 'max:255'],
+                    'country' => ['required', 'integer'],
+                    'division' => ['required', 'integer'],
+                    'district' => ['required', 'integer'],
+                    'area' => ['required', 'integer'],
+                    'BillingAddress' => ['required', 'string', 'max:255'],
+                    'ContactPhone' => ['required', 'string', 'max:255'],
+                    'ContactEmail' => ['required', 'email', 'max:255'],
+                    'WebsiteAddress' => ['nullable', 'url', 'max:255'],
+                ]);
+                $empprofile->update($validatedData);
+                break;
+
+            default:
+                return response()->json(['message' => 'Invalid action.'], 400);
         }
-        
-        $empprofile->companyname = $request->companyname;
 
-        
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-    public function updateorcreate(request $r,$id){
-         //empprofile::updateOrCreate(['id'=>2,'employer_id'=>$id,'companyname'=>'emon']);
-       return "success";
+        return response()->json(['message' => 'Profile updated successfully.']);
     }
 }
