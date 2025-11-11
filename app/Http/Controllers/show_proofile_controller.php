@@ -1,59 +1,64 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\country;
-use App\division;
-use App\district;
-use App\area;
 use App\empprofile;
-use Auth;
-use App\catagory;
-use App\job;
-use App\industrytype;
-use Storage;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class show_proofile_controller extends Controller
 {
-
     public function __construct()
     {
         $this->middleware('employer');
-    } 
+    }
 
+    public function showdata(): View
+    {
+        $employerId = auth('employer')->id();
 
-    public function showdata(){
-    	$ida = Auth::guard('employer')->user()->id;
-	  	$data=empprofile::join('countries','empprofiles.country','countries.id')->join('divisions','empprofiles.division','divisions.id')->join('districts','empprofiles.district','districts.id')->join('areas','empprofiles.area','areas.id')->select('empprofiles.*','countries.name As cname','divisions.name As dname','districts.name As disname','areas.name As aname')->where('empprofiles.employer_id',$ida)->get();
-		       //return $empdes = $id;
-		      $empdes = $data[0];
-		      return view('employer/resume',compact('empdes'));
+        $empdes = empprofile::query()
+            ->join('countries', 'empprofiles.country', '=', 'countries.id')
+            ->join('divisions', 'empprofiles.division', '=', 'divisions.id')
+            ->join('districts', 'empprofiles.district', '=', 'districts.id')
+            ->join('areas', 'empprofiles.area', '=', 'areas.id')
+            ->select(
+                'empprofiles.*',
+                'countries.name as cname',
+                'divisions.name as dname',
+                'districts.name as disname',
+                'areas.name as aname'
+            )
+            ->where('empprofiles.employer_id', $employerId)
+            ->firstOrFail();
 
-		    }
-public function getimage(Request $request){
-        $ida = Auth::guard('employer')->user()->id;
-        $frff = empprofile::where('employer_id',$ida)->get();
-        $empprofile=$frff[0];
+        return view('employer.resume', compact('empdes'));
+    }
 
-        $request->file('image');
+    public function getimage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
+        ]);
 
-        $extension=$request->image->extension();
-        $curent_time=md5(time());
-        $unique_image=$curent_time.".".$extension;
-        if($empprofile->companylogo)
-       {
-           storage::delete('public/company_logo/'.$empprofile->companylogo);
-      
+        $employerId = auth('employer')->id();
+        $empprofile = empprofile::where('employer_id', $employerId)->firstOrFail();
+        $newImage = $request->file('image');
+        $uniqueImageName = Str::uuid() . '.' . $newImage->extension();
+
+        if ($empprofile->companylogo) {
+            Storage::delete('public/company_logo/' . $empprofile->companylogo);
         }
-        
 
-      $request->image->storeAs('/public/company_logo',$unique_image);
-      $empprofile->companylogo = $unique_image;
-      $empprofile->save();
+        $newImage->storeAs('public/company_logo', $uniqueImageName);
+        $empprofile->companylogo = $uniqueImageName;
+        $empprofile->save();
 
-
-
-}
-
-
+        return response()->json(['message' => 'Image uploaded successfully.']);
+    }
 }

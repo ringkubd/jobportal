@@ -1,178 +1,125 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\job;
-use App\catagory;
 use App\Applied_job;
-use Auth;
 use App\block;
+use App\catagory;
 use App\follower;
-use DB;
-use Session;
+use App\Job;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class alljobsController extends Controller
 {
-	public function __construct()
+    public function __construct()
     {
         $this->middleware('jobseeker');
-    } 
+    }
 
+    public function index(): View
+    {
+        $jobseekerId = auth('jobseeker')->id();
+        $totalApplied = Applied_job::where('jobseeker_id', $jobseekerId)->count();
+        return view('jobseeker.home', compact('totalApplied'));
+    }
 
-	public function index(){
-		$ida = Auth::guard('jobseeker')->user()->id;
+    public function showalljobs(): View
+    {
+        $jobseekerId = auth('jobseeker')->id();
+        $categories = catagory::all();
 
-		// total apllied on specific user
-		$totalApplied = $this->totalApplied($ida);
-		return view('jobseeker.home',compact('totalApplied'));
-	}
+        $blockedEmployerIds = block::where('jobseeker_id', $jobseekerId)->pluck('employer_id');
+        $followedEmployerIds = follower::where('jobseeker_id', $jobseekerId)->pluck('employer_id');
 
+        $jobsQuery = Job::where('published', 1)
+            ->whereNotIn('employer_id', $blockedEmployerIds)
+            ->with('employer.profile');
 
-##########Show All Jobs#########
+        if ($followedEmployerIds->isNotEmpty()) {
+            $jobsQuery->orderByRaw('FIELD(employer_id, ' . $followedEmployerIds->implode(',') . ') DESC, id DESC');
+        } else {
+            $jobsQuery->orderBy('id', 'desc');
+        }
 
+        $jobs = $jobsQuery->paginate(10);
 
-   public function showalljobs(){
-   	 $catagories=catagory::all();
-   	$jobseeker_id=Auth::guard('jobseeker')->user()->id;
-   	        $blockcheck=block::where('jobseeker_id',$jobseeker_id)->pluck('employer_id');
-   	        $followcheck=follower::where('jobseeker_id',$jobseeker_id)->get();
-   	        $fl='';
-   	        foreach($followcheck as $f){
-   	        	$fl=$f->employer_id;
-   	        }
-   	       if(count($blockcheck)>0 && count($followcheck)>0){
-	  		$job=job::where('published',1)->whereNotIn('employer_id',$blockcheck)->orderByRaw('employer_id in('.$fl.') desc, id desc')->paginate(2);
-	  
-	  		if(count($job))
+        return view('jobseeker.job', compact('job', 'catagories'));
+    }
 
-	  		{
-	  			
-	  			return view('jobseeker.job',compact('job','catagories'));
-	  		}else{
-	  			$message ='no data found';
-	  			return view('jobseeker.job',compact('message','catagories'));
-	  		}
-	  	}
-	  	else if(count($blockcheck)>0){
-	  		$job=job::where('published',1)->whereNotIn('employer_id',$blockcheck)->orderBy('id','desc')->paginate(2);
-	  
-	  		if(count($job))
-	  		{
-	  			
-	  			return view('jobseeker.job',compact('job','catagories'));
-	  		}else{
-	  			$message ='no data found';
-	  			return view('jobseeker.job',compact('message','catagories'));
-	  		}
-	  	}
-	  	else if(count($followcheck)>0){
-	  		$job=job::where('published',1)->orderByRaw('employer_id in ('.$fl.')desc, id desc')->paginate(2);
-	  
-	  		if(count($job))
+    public function show(int $categoryId): View
+    {
+        $jobseekerId = auth('jobseeker')->id();
+        $blockedEmployerIds = block::where('jobseeker_id', $jobseekerId)->pluck('employer_id');
+        $categories = catagory::all();
 
-	  		{
-	  			
-	  			return view('jobseeker.job',compact('job','catagories'));
-	  		}else{
-	  			$message ='no data found';
-	  			return view('jobseeker.job',compact('message','catagories'));
-	  		}
-	  	}
-	  	else{
+        $categoryJobs = Job::where('catagory_id', $categoryId)
+            ->where('published', 1)
+            ->whereNotIn('employer_id', $blockedEmployerIds)
+            ->paginate(10);
 
-           $job=job::where('published',1)->orderBy('id','desc')->paginate(2);
-           if(count($job))
+        return view('jobseeker.showjobsbycat', compact('catjobs', 'catagories'));
+    }
 
-	  		{
-	  			
-	  			return view('jobseeker.job',compact('job','catagories'));
-	  		}else{
-	  			$message ='no data found';
-	  			return view('jobseeker.job',compact('message','catagories'));
-	  		}
+    public function jobsdescription(int $jobId): View
+    {
+        $job = Job::with([
+            'employer.profile',
+            'catagory',
+            'industrytype',
+            'district',
+            'division'
+        ])->findOrFail($jobId);
 
-	  	}
-	  	}
-
-public function show($id){
-	$catagories=catagory::all();
-		$jobseeker_id=Auth::guard('jobseeker')->user()->id;
-   	        $blockcheck=block::where('jobseeker_id',$jobseeker_id)->pluck('employer_id');
-   	       if(count($blockcheck)>0){
-	  		//$job=job::where('published',1)->whereNotIn('employer_id',$blockcheck)->paginate(2);
-	         $catjobs=job::where('catagory_id',$id)->where('published',1)->whereNotIn('employer_id',$blockcheck)->paginate(2);
-              return view('jobseeker.showjobsbycat',compact('catjobs','catagories'));
-
-           }
-           else{
-
-
-	$catjobs=job::where('catagory_id',$id)->where('published',1)->paginate(2);
-	return view('jobseeker.showjobsbycat',compact('catjobs','catagories'));
-	}
-}
-
-
-    public function jobsdescription($id){
-    $apply='false';
-    $catid=DB::table('jobs')->where('jobs.id',$id)->pluck('catagory_id');
-    //return $catid;
-   $relatedJobs=DB::table('jobs')->where('jobs.catagory_id',$catid)->where('jobs.id','!=',$id)->join('empprofiles', 'jobs.employer_id', '=', 'empprofiles.employer_id') ->join('divisions', 'jobs.division_id', '=', 'divisions.id')->select('jobs.*','divisions.name as divname','empprofiles.companylogo as clogo')->
-take(10)->orderByRaw("Rand()")->get();
-
-    $catagories=catagory::all();
-    $jobdata = job::
-            join('empprofiles', 'jobs.employer_id', '=', 'empprofiles.employer_id')
-            ->join('catagories', 'jobs.catagory_id', '=', 'catagories.id')
-            ->join('industrytypes', 'jobs.industrytype_id', '=', 'industrytypes.id')
-            ->join('districts', 'jobs.district_id', '=', 'districts.id')
-            ->join('divisions', 'jobs.division_id', '=', 'divisions.id')
-
-
-            ->select('jobs.*','empprofiles.companyname','empprofiles.companylogo','empprofiles.companyaddress', 'catagories.catagoryname', 'industrytypes.industrytypename','districts.name as distname','divisions.name as divname')
-            ->where('jobs.id',$id)
+        $relatedJobs = Job::where('catagory_id', $job->catagory_id)
+            ->where('id', '!=', $jobId)
+            ->with(['employer.profile', 'division'])
+            ->inRandomOrder()
+            ->take(10)
             ->get();
-            if (Auth::guard('jobseeker')->check()) {
-                $jobseeker_id=Auth::guard('jobseeker')->user()->id;
 
-            $check=Applied_job::where('job_id',$id)->where('jobseeker_id',$jobseeker_id)->get();
-            $num_rows=count($check);
-            if($num_rows>0){
-            $apply='true';
-            }
-            
-}
-	 return view('jobseeker.showjobsbyid',compact('jobdata','catagories','apply','relatedJobs'));
-      // return $jobdata;
+        $isApplied = auth('jobseeker')->check() ?
+            Applied_job::where('job_id', $jobId)->where('jobseeker_id', auth('jobseeker')->id())->exists() :
+            false;
 
-}
-public function applyjob(Request $data){
-$jobseeker_id=Auth::guard('jobseeker')->user()->id;
-$check=Applied_job::where('job_id',$data->jobid)->where('jobseeker_id',$jobseeker_id)->get();
- $num_rows=count($check);
-if($num_rows>0){
-	Session::flash('applied', 'You are allready applied for this job.');
-	return redirect(url('jobseeker/alljobsshow/'.$data->jobid));
-}
-else{
-$employerId = DB::table('jobs')->where('id',$data->jobid)->select('employer_id')->get();
-//return $employerId[0]->employer_id;
-Applied_job::create(['job_id'=>$data->jobid,'jobseeker_id'=>$jobseeker_id,'employer_id'=>$employerId[0]->employer_id,'expected_salary'=>$data->expected_sallary]);
-Session::flash('applied', 'You are succesfully applied');
-return redirect(url('jobseeker/managejobs'));
-}
-}
+        $categories = catagory::all();
 
+        return view('jobseeker.showjobsbyid', [
+            'jobdata' => [$job],
+            'catagories' => $categories,
+            'apply' => $isApplied,
+            'relatedJobs' => $relatedJobs,
+        ]);
+    }
 
-// Specific jobseeker statastics
+    public function applyjob(Request $request): RedirectResponse
+    {
+        $validatedData = $request->validate([
+            'jobid' => 'required|integer|exists:jobs,id',
+            'expected_sallary' => 'nullable|numeric',
+        ]);
 
-	private function totalApplied($id)
-	{
-		$applied = DB::table('applied_jobs')->where('jobseeker_id',$id)->get();
-		return $totalApplied = count($applied);
-	}
+        $jobseekerId = auth('jobseeker')->id();
+        $jobId = $validatedData['jobid'];
 
+        if (Applied_job::where('job_id', $jobId)->where('jobseeker_id', $jobseekerId)->exists()) {
+            return redirect()->to('jobseeker/alljobsshow/' . $jobId)
+                ->with('applied', 'You have already applied for this job.');
+        }
 
+        $job = Job::findOrFail($jobId);
 
+        Applied_job::create([
+            'job_id' => $jobId,
+            'jobseeker_id' => $jobseekerId,
+            'employer_id' => $job->employer_id,
+            'expected_salary' => $validatedData['expected_sallary'],
+        ]);
+
+        return redirect()->to('jobseeker/managejobs')
+            ->with('applied', 'You have successfully applied for the job.');
+    }
 }

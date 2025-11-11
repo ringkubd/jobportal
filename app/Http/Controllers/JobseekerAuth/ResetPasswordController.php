@@ -1,78 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\JobseekerAuth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Auth\PasswordBroker;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ResetPasswordController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Password Reset Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller is responsible for handling password reset requests
-    | and uses a simple trait to include this behavior. You're free to
-    | explore this trait and override any methods you wish to tweak.
-    |
-    */
-
     use ResetsPasswords;
 
-    /**
-     * Where to redirect users after login / registration.
-     *
-     * @var string
-     */
-    public $redirectTo = '/jobseeker/home';
+    protected string $redirectTo = '/jobseeker/home';
 
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('jobseeker.guest');
     }
 
-    /**
-     * Display the password reset view for the given token.
-     *
-     * If no token is present, display the link request form.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string|null  $token
-     * @return \Illuminate\Http\Response
-     */
-    public function showResetForm(Request $request, $token = null)
+    public function showResetForm(Request $request, string $token = null): View
     {
-        return view('jobseeker.auth.passwords.reset')->with(
-            ['token' => $token, 'email' => $request->email]
-        );
+        return view('jobseeker.auth.passwords.reset')->with([
+            'token' => $token,
+            'email' => $request->email,
+        ]);
     }
 
-    /**
-     * Get the broker to be used during password reset.
-     *
-     * @return \Illuminate\Contracts\Auth\PasswordBroker
-     */
-    public function broker()
+    public function broker(): PasswordBroker
     {
         return Password::broker('jobseekers');
     }
 
-    /**
-     * Get the guard to be used during password reset.
-     *
-     * @return \Illuminate\Contracts\Auth\StatefulGuard
-     */
-    protected function guard()
+    protected function guard(): StatefulGuard
     {
         return Auth::guard('jobseeker');
     }

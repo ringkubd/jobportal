@@ -150,7 +150,7 @@ Route::resource('editemployer','employerController');
 
 Route::get('/showdata','show_proofile_controller@showdata');
 
-Route::post('/uploadimage','show_proofile_controller@getimage');
+Route::post('/uploadimage','show_proofile_controller@getimage')->name('employer.updateImage');
 
 
 Route::get('jobseeker/home', function() {
